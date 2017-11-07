@@ -129,7 +129,7 @@
                             },
                             error: function (data) {
                                 $log.append('Retrieved error response\n');
-                                $res.html(JSON.stringify(data, null, ' '));
+                                $res.text(JSON.stringify(data, null, ' '));
                             }
                         });
                     },
