@@ -11,8 +11,14 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous" />
 
     <style>
-      .ks-response {
-        white-space: pre-wrap;
+      .ks-response { white-space: pre-wrap; }
+
+      [data-template="content-segment-image"] {
+        display: inline-block;
+        margin: 30px;
+        border: 1px solid #ccc9c9;
+        border-radius: 7px;
+        overflow: hidden;
       }
     </style>
   </head>
@@ -46,15 +52,35 @@
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
 
-                <h2 class="mt-5">Log</h2>
-				<pre class="ks-log my-2 alert alert-dark">
-				</pre>
 
-        <h2 class="mt-5">Results</h2>
-				<div class="my-2 alert alert-dark">
-					<span class="ks-loader d-none">Loading...</span>
-          <xmp class="ks-response"></xmp>
-				</div>
+        <h2>Results</h2>
+
+        <ul class="nav nav-tabs" id="responseTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link" id="results-tab" data-toggle="tab" href="#results" role="tab" aria-controls="results" aria-selected="true">JSON</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="false">Document</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" id="log-tab" data-toggle="tab" href="#log" role="tab" aria-controls="log" aria-selected="false">Log</a>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="responseTabContent">
+          <div class="tab-pane fade" id="results" role="tabpanel" aria-labelledby="results-tab">
+            <div class="my-2 alert alert-dark response-raw">
+              <xmp class="ks-response"></xmp>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="document" role="tabpanel" aria-labelledby="document-tab">
+            <br />
+            <div class="ks-response-html"></div>
+          </div>
+          <div class="tab-pane fade show active" id="log" role="tabpanel" aria-labelledby="log-tab">
+            <pre class="ks-log my-2 alert alert-dark"></pre>
+          </div>
+        </div>
 
 			</div>
 		</div>
@@ -75,6 +101,7 @@
                 var $form = $(this);
                 var $log = $('.ks-log');
                 var $res = $('.ks-response');
+                var $resHtml = $('.ks-response-html');
                 var method = $form.find('input[name=method]').val();
                 var apiKey = $form.find('input[name=apikey]').val();
                 var secret = $form.find('input[name=secret]').val();
@@ -84,6 +111,7 @@
 
                 $log.html('');
                 $res.html('');
+                $resHtml.html('');
 
                 window.location.hash='#'+$form.serialize();
 
@@ -92,6 +120,17 @@
                 $log.append('Using secret: '+secret+'\n');
 
                 $loader.show();
+
+                buildHtmlView = function(data) {
+                  data.Segments.forEach(function(seg){
+                    $segment = $("<div />", {"class": "segment"});
+                    $segment.append("<h3>" + seg.CustomName + "</h3>");
+                    $segment.append(seg.Body);
+                    $resHtml.append($segment);
+                  });
+                  $('a[href="#document"]').tab('show');
+                };
+
                 $.ajax({
                     url: 'https://api.kramesstaywell.com/OAuth/TokenEndpoint',
                     type: 'POST',
@@ -132,6 +171,7 @@
                             success: function (data) {
                                 $log.append('Retrieved successful response\n');
                                 $res.html(JSON.stringify(data, null, ' '));
+                                buildHtmlView(data);
                             },
                             error: function (data) {
                                 $log.append('Retrieved error response\n');
