@@ -126,7 +126,7 @@
                 $loader.show();
 
                 buildHtmlView = function(data) {
-			var source   = document.getElementById("template").innerHTML;
+			var source   = $('#template').val();
 			var template = Handlebars.compile(source);
 			$('#document').html(template(data));
                 };
