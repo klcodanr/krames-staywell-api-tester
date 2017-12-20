@@ -115,6 +115,7 @@
 
                 $log.html('');
                 $res.html('');
+		    
                 $resHtml.html('');
 
                 window.location.hash='#'+$form.serialize();
@@ -128,7 +129,7 @@
                 buildHtmlView = function(data) {
 			var source   = $('#template').val();
 			var template = Handlebars.compile(source);
-			$('#document').html(template(data));
+			$resHtml.html(template(data));
                 };
 
                 $.ajax({
