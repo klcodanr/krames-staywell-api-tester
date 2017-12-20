@@ -124,13 +124,13 @@
 
                 var parameters = {};
 
+                window.location.hash='#'+$form.serialize();
+		    
                 $log.html('');
                 $res.html('');
                 $resHtml.html('');
 	        toggleForm(false);
 		$('#log').tab('show');
-
-                window.location.hash='#'+$form.serialize();
 
                 $log.append('Requesting token from https://api.kramesstaywell.com/OAuth/TokenEndpoint\n')
                 $log.append('Using API key: '+apiKey+'\n');
