@@ -104,6 +104,9 @@
 		var template = Handlebars.compile(source);
 		$resHtml.html(template(data));
 	};
+	var $log = $('.ks-log');
+	var $res = $('.ks-response');
+	var $resHtml = $('.ks-response-html');
 	var toggleForm = function(enable){
 		if(enable){
 			$('.ks-form input, .ks-form textarea, .ks-form button').removeAttr('disabled');
@@ -113,10 +116,7 @@
 	};
     	$('.ks-form').submit(function(){
             try{
-                var $form = $(this);
-                var $log = $('.ks-log');
-                var $res = $('.ks-response');
-                var $resHtml = $('.ks-response-html');
+		var $form = $(this);
                 var method = $form.find('input[name=method]').val();
                 var apiKey = $form.find('input[name=apikey]').val();
                 var secret = $form.find('input[name=secret]').val();
