@@ -99,7 +99,18 @@
     <script>
 	const hash = '?'+window.location.hash.substring(1);
 	(new URL('http://www.google.com'+hash)).searchParams.forEach((x, y) => document.getElementById(y).value = x);
-        var $loader = $('.ks-loader');
+	var buildHtmlView = function(data) {
+		var source   = $('#template').val();
+		var template = Handlebars.compile(source);
+		$resHtml.html(template(data));
+	};
+	var toggleForm = function(enable){
+		if(enable){
+			$('.ks-form input, .ks-form textarea, .ks-form button').removeAttr('disabled');
+		} else {
+			$('.ks-form input, .ks-form textarea, .ks-form button').attr('disabled','disabled');
+		}
+	};
     	$('.ks-form').submit(function(){
             try{
                 var $form = $(this);
@@ -115,22 +126,15 @@
 
                 $log.html('');
                 $res.html('');
-		    
                 $resHtml.html('');
+	        toggleForm(false);
+		$('#log').tab('show');
 
                 window.location.hash='#'+$form.serialize();
 
                 $log.append('Requesting token from https://api.kramesstaywell.com/OAuth/TokenEndpoint\n')
                 $log.append('Using API key: '+apiKey+'\n');
                 $log.append('Using secret: '+secret+'\n');
-
-                $loader.show();
-
-                buildHtmlView = function(data) {
-			var source   = $('#template').val();
-			var template = Handlebars.compile(source);
-			$resHtml.html(template(data));
-                };
 
                 $.ajax({
                     url: 'https://api.kramesstaywell.com/OAuth/TokenEndpoint',
@@ -173,20 +177,24 @@
                                 $log.append('Retrieved successful response\n');
                                 $res.html(JSON.stringify(data, null, ' '));
                                 buildHtmlView(data);
+				toggleForm(true);
                             },
                             error: function (data) {
                                 $log.append('Retrieved error response\n');
                                 $res.text(JSON.stringify(data, null, ' '));
+				toggleForm(true);
                             }
                         });
                     },
                     error: function (data) {
                         $log.append('Retrieved error response\n');
                         $log.append(JSON.stringify(data, null, ' '));
+			toggleForm(true);
                     }
                 });
             } catch (e) {
                 alert('Client error ' + e.message);
+		toggleForm(true);
             }
 
             return false;
